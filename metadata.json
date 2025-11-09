@@ -1,0 +1,5 @@
+{
+  "name": "DeviceBound Wallet - Fully On-Chain",
+  "description": "A 100% decentralized, serverless, PWA wallet where each wallet is a smart contract secured by device-bound WebAuthn keys. All state lives on-chain.",
+  "requestFramePermissions": []
+}
