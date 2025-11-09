@@ -54,21 +54,30 @@ export const createNewCredential = async (username: string): Promise<CredentialW
     timeout: 60000,
   };
 
-  const credential = (await navigator.credentials.create({ publicKey })) as CredentialWithId | null;
+  const credential = (await navigator.credentials.create({ publicKey })) as PublicKeyCredential | null;
   if (!credential) throw new Error("Credential creation failed.");
 
-  return credential;
+  if (!(credential.response instanceof AuthenticatorAttestationResponse)) {
+    throw new Error("Invalid attestation response");
+  }
+
+  return credential as CredentialWithId;
 };
 
 // اضافه شده: getWebAuthnSignature
 export const getWebAuthnSignature = async (
   credentialId: string,
   challenge: Uint8Array
-): Promise<Uint8Array> => {
+): Promise<AuthenticatorAssertionResponse> => {
   if (!window.PublicKeyCredential) throw new Error("WebAuthn is not supported");
 
+  // Convert challenge to proper Uint8Array with ArrayBuffer
+  // Create a new ArrayBuffer to ensure compatibility
+  const validChallenge = new Uint8Array(challenge.length);
+  validChallenge.set(challenge);
+
   const publicKey: PublicKeyCredentialRequestOptions = {
-    challenge,
+    challenge: validChallenge,
     allowCredentials: [{
       type: "public-key",
       id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
@@ -77,9 +86,12 @@ export const getWebAuthnSignature = async (
     timeout: 60000,
   };
 
-  const assertion = await navigator.credentials.get({ publicKey });
+  const assertion = await navigator.credentials.get({ publicKey }) as PublicKeyCredential | null;
   if (!assertion) throw new Error("Authentication failed.");
 
-  const response = assertion.response as AuthenticatorAssertionResponse;
-  return new Uint8Array(response.signature);
+  if (!(assertion.response instanceof AuthenticatorAssertionResponse)) {
+    throw new Error("Invalid response type");
+  }
+
+  return assertion.response;
 };

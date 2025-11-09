@@ -71,10 +71,13 @@ const Dashboard: React.FC = () => {
       const assertion = await getWebAuthnSignature(walletData.credentialId, challenge);
       
       setStatus('Processing signature...');
-      const signatureASN1 = assertion.signature;
+      const signatureASN1 = new Uint8Array(assertion.signature);
       const { r, s } = parseASN1Signature(signatureASN1);
 
       setStatus('Sending transaction to the network...');
+      if (!walletData.primaryPublicKey) {
+        throw new Error('Primary public key not found in wallet data');
+      }
       const tx = await contract.execute(
         walletData.primaryPublicKey,
         r,

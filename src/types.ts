@@ -18,6 +18,8 @@ export interface WalletData {
   primaryPubKeyHash: `0x${string}`;
   credentialId: string;
   curve: CurveType;
+  signature?: Uint8Array;
+  primaryPublicKey?: string;
 }
 
 export interface Device {

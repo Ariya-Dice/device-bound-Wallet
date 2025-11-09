@@ -72,7 +72,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       const challenge = crypto.getRandomValues(new Uint8Array(32));
       let assertion: AuthenticatorAssertionResponse;
       try {
-        assertion = await getWebAuthnSignature('', challenge);
+        const response = await getWebAuthnSignature('', challenge);
+        if (!(response instanceof AuthenticatorAssertionResponse)) {
+          throw new Error('Invalid response');
+        }
+        assertion = response;
       } catch (err: any) {
         const message =
           err?.message ??
