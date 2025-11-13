@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -16,6 +17,9 @@ export default {
         'text-primary': '#f9fafb',
         'text-secondary': ' #d1d5db',
         'accent': '#a78bfa',
+      },
+      fontFamily: {
+        'vazir': ['Vazirmatn', 'sans-serif'],
       },
     },
   },

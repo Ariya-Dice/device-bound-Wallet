@@ -78,4 +78,46 @@ export const CHAINS: Record<string, ChainConfig> = {
     pubKeyCurve: 'secp256k1',
     currency: { name: 'BTC', symbol: 'tBTC', decimals: 8 },
   },
+  // Cosmos
+  'cosmos:testnet': {
+    id: 'cosmos:testnet',
+    chainType: 'cosmos',
+    name: 'Cosmos Testnet',
+    rpcUrl: 'https://rpc.testnet.cosmos.network',
+    explorerUrl: 'https://explorer.testnet.cosmos.network',
+    pubKeyCurve: 'Ed25519',
+    currency: { name: 'ATOM', symbol: 'ATOM', decimals: 6 },
+  },
+  // Polkadot
+  'polkadot:testnet': {
+    id: 'polkadot:testnet',
+    chainType: 'polkadot',
+    name: 'Polkadot Testnet',
+    rpcUrl: 'https://rpc.polkadot.io',
+    explorerUrl: 'https://polkascan.io',
+    pubKeyCurve: 'Ed25519',
+    currency: { name: 'DOT', symbol: 'DOT', decimals: 10 },
+  },
+  // Polygon
+  '137': {
+    id: 137,
+    chainType: 'evm',
+    name: 'Polygon Mainnet',
+    rpcUrl: 'https://polygon-rpc.com',
+    explorerUrl: 'https://polygonscan.com',
+    pubKeyCurve: 'secp256k1',
+    currency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+    domainSeparator: 'POLYGON:mainnet',
+  },
+  // Arbitrum
+  '42161': {
+    id: 42161,
+    chainType: 'evm',
+    name: 'Arbitrum One',
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    explorerUrl: 'https://arbiscan.io',
+    pubKeyCurve: 'secp256k1',
+    currency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+    domainSeparator: 'ARBITRUM:one',
+  },
 };

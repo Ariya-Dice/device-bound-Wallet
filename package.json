@@ -6,16 +6,25 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "forge:build": "forge build",
+    "forge:test": "forge test",
+    "forge:script": "forge script"
   },
   "dependencies": {
+    "@lit-protocol/sdk-nodejs": "^4.2.0",
+    "@paraswap/sdk": "^5.0.0",
     "@simplewebauthn/browser": "^13.2.2",
     "@simplewebauthn/server": "^13.2.2",
+    "@solana/web3.js": "^1.87.6",
+    "@uniswap/v3-sdk": "^3.10.0",
+    "axios": "^1.6.0",
     "cbor-web": "^10.0.11",
     "cbor-x": "^1.6.0",
     "ethers": "^6.15.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
@@ -23,6 +32,7 @@
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.27",
+    "postcss-rtl": "^1.8.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",

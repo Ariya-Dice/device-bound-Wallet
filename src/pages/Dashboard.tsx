@@ -5,8 +5,14 @@ import { DEVICE_BOUND_WALLET_ABI } from '../constants';
 import { getWebAuthnSignature } from '../lib/webauthn';
 import { parseASN1Signature } from '../lib/crypto';
 import Spinner from '../components/Spinner';
+import Swap from './Swap';
+import Bridge from './Bridge';
+import TestMatrix from '../components/TestMatrix';
+
+type TabType = 'send' | 'swap' | 'bridge' | 'test';
 
 const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('send');
   const { walletData, chain, provider } = useWallet();
   const [balance, setBalance] = useState<string>('0');
   const [toAddress, setToAddress] = useState('');
@@ -75,17 +81,17 @@ const Dashboard: React.FC = () => {
       const { r, s } = parseASN1Signature(signatureASN1);
 
       setStatus('Sending transaction to the network...');
-      if (!walletData.primaryPublicKey) {
-        throw new Error('Primary public key not found in wallet data');
-      }
+      // Construct signature from r and s
+      const signature = ethers.concat([r, s, '0x1c']); // v = 28 (0x1c)
+      const pubKeyHash = walletData.primaryPubKeyHash;
+      
       const tx = await contract.execute(
-        walletData.primaryPublicKey,
-        r,
-        s,
+        signature,
+        pubKeyHash,
         txHashToSign,
+        nonce,
         toAddress,
-        value,
-        nonce
+        value
       );
       setTxHash(tx.hash);
 
@@ -132,29 +138,64 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="bg-surface p-6 rounded-lg shadow-xl">
-        <h2 className="text-2xl font-bold text-text-primary mb-4">Send Funds</h2>
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="toAddress" className="block text-sm font-medium text-text-secondary mb-1">Recipient Address</label>
-            <input id="toAddress" type="text" value={toAddress} onChange={(e) => setToAddress(e.target.value)} placeholder="0x..." className="w-full bg-background border border-gray-600 text-text-primary rounded-lg p-2 focus:ring-brand-primary focus:border-brand-primary font-mono"/>
-          </div>
-          <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-text-secondary mb-1">Amount</label>
-            <input id="amount" type="text" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.0" className="w-full bg-background border border-gray-600 text-text-primary rounded-lg p-2 focus:ring-brand-primary focus:border-brand-primary font-mono"/>
-          </div>
-          <button onClick={handleSend} disabled={isSending} className="w-full bg-brand-primary hover:bg-brand-light text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center">
-            {isSending ? <Spinner /> : `Send ${chain.currency.symbol}`}
+        <div className="flex border-b border-gray-600 mb-4">
+          <button
+            onClick={() => setActiveTab('send')}
+            className={`px-4 py-2 font-medium ${activeTab === 'send' ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-secondary'}`}
+          >
+            Send
+          </button>
+          <button
+            onClick={() => setActiveTab('swap')}
+            className={`px-4 py-2 font-medium ${activeTab === 'swap' ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-secondary'}`}
+          >
+            Swap
+          </button>
+          <button
+            onClick={() => setActiveTab('bridge')}
+            className={`px-4 py-2 font-medium ${activeTab === 'bridge' ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-secondary'}`}
+          >
+            Bridge
+          </button>
+          <button
+            onClick={() => setActiveTab('test')}
+            className={`px-4 py-2 font-medium ${activeTab === 'test' ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-secondary'}`}
+          >
+            Test
           </button>
         </div>
-        {status && <p className="text-accent mt-4 text-sm text-center">{status}</p>}
-        {error && <p className="text-red-500 mt-4 text-sm text-center">{error}</p>}
-        {txHash && (
-          <div className="mt-4 text-center text-sm">
-            <a href={`${chain.explorerUrl}/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
-              View transaction on explorer
-            </a>
+
+        {activeTab === 'send' && (
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary mb-4">Send Funds</h2>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="toAddress" className="block text-sm font-medium text-text-secondary mb-1">Recipient Address</label>
+                <input id="toAddress" type="text" value={toAddress} onChange={(e) => setToAddress(e.target.value)} placeholder="0x..." className="w-full bg-background border border-gray-600 text-text-primary rounded-lg p-2 focus:ring-brand-primary focus:border-brand-primary font-mono"/>
+              </div>
+              <div>
+                <label htmlFor="amount" className="block text-sm font-medium text-text-secondary mb-1">Amount</label>
+                <input id="amount" type="text" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.0" className="w-full bg-background border border-gray-600 text-text-primary rounded-lg p-2 focus:ring-brand-primary focus:border-brand-primary font-mono"/>
+              </div>
+              <button onClick={handleSend} disabled={isSending} className="w-full bg-brand-primary hover:bg-brand-light text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center">
+                {isSending ? <Spinner /> : `Send ${chain.currency.symbol}`}
+              </button>
+            </div>
+            {status && <p className="text-accent mt-4 text-sm text-center">{status}</p>}
+            {error && <p className="text-red-500 mt-4 text-sm text-center">{error}</p>}
+            {txHash && (
+              <div className="mt-4 text-center text-sm">
+                <a href={`${chain.explorerUrl}/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
+                  View transaction on explorer
+                </a>
+              </div>
+            )}
           </div>
         )}
+
+        {activeTab === 'swap' && <Swap />}
+        {activeTab === 'bridge' && <Bridge />}
+        {activeTab === 'test' && <TestMatrix />}
       </div>
     </div>
   );

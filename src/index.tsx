@@ -3,6 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { WalletProvider } from './hooks/useWallet';
+import { ThemeProvider } from './hooks/useTheme';
+import { LanguageProvider } from './hooks/useLanguage';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,8 +14,12 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <WalletProvider>
-      <App />
-    </WalletProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <WalletProvider>
+          <App />
+        </WalletProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
