@@ -12,7 +12,7 @@
     "forge:script": "forge script"
   },
   "dependencies": {
-    "@lit-protocol/sdk-nodejs": "^4.2.0",
+    "@lit-protocol/sdk-nodejs": "^3.0.0",
     "@paraswap/sdk": "^5.0.0",
     "@simplewebauthn/browser": "^13.2.2",
     "@simplewebauthn/server": "^13.2.2",
